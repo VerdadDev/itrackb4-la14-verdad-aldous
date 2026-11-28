@@ -5,11 +5,19 @@
 @section('content')
 
 
+    @can('create', App\Models\Comic::class)
     @auth
     <a href="{{ route('comics.create') }}" class="btn btn-primary">
         <i class="bi bi-plus-lg me-1"></i>Add Character
-    </a>
+    </a>        
     @endauth
+    @endcan
+
+    @cannot('create', App\Models\Comic::class)
+
+    <p class="text-muted small">You are viewing this list in read-only mode.</p>
+
+    @endcannot
 
     <form method="GET" action="{{ route('comics.index') }}">
     <input type="text" name="search" value="{{ request('search') }}">
@@ -85,10 +93,13 @@
                             </td>
                             @auth
                             <td class="text-center">
+                                @can('update', $comic)
                                 <a href="{{ route('comics.edit', $comic->id) }}"
                                    class="btn btn-warning btn-sm">
                                     <i class="bi bi-pencil"></i>
                                 </a>
+                                @endcan
+                                @can('delete', $comic)
                                 <form action="{{ route('comics.destroy', $comic->id) }}"
                                       method="POST" class="d-inline">
                                     @csrf
@@ -98,6 +109,7 @@
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
+                                @endcan
                             </td>
                             @endauth
                         </tr>

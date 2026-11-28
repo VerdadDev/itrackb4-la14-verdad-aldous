@@ -1,25 +1,25 @@
 #Answers
 
-F1 Authentication and authorisation are not the same. In one sentence each: what did this lesson give you, and what is still missing next meeting?
+1 Your project answered one question last week and a second one this week. Name both questions, say which one your policy answers, and point at the file that answers the other.
 
-    This lesson taught me how to protect routes using authentication
+    Last week's question was authentication: "who are you?" This week's is authorisation: "are you allowed to do this?" ComicPolicy answers the second. The first is answered in routes/web.php, where the auth middleware sits on the routes, with login code.
 
-F2 Why does a successful login call session()->regenerate()? What goes wrong if you skip it?
+2 role is not in your User model's $fillable, and yet you set it and saved it in Tinker. Explain why both of those are true, and say what $fillable is actually guarding you against.
 
-    session()->regenerate() creates a new session ID after login to prevent session fixation attacks. If skipped, an attacker may exploit an existing session ID to access the user's account.
+    $fillable only blocks mass assignment (like User::create($request->all())). In Tinker you set role directly and saved, so $fillable didn't apply. It protects you from users sneaking in extra fields, like role=admin, through a form.
 
-F3 Why does a failed login use the same message for a wrong password and an unknown email?
+3 signed-in non-admin typing your create address gets a 403. A guest typing the same address gets your login page. Say which layer produced each response, and why the two are deliberately different.
 
-    Using the same error message prevents attackers from knowing whether an email is registered or if the password is wrong, helping protect user accounts from enumeration attacks
+    The non-admin gets a 403 from the policy (authorisation): "I know who you are, but you're not allowed." The guest gets redirected by the auth middleware (authentication): "I don't know who you are, so log in first." They're different because logging in can fix the guest's problem, but not the non-admin's.
 
-F4 Why do index and show stay public while create/edit/update/destroy use auth?
+4 Your list and detail pages are still open to everybody, and your policy says so. Explain why that is a decision and not something you forgot.
 
-    Index and show are public so visitors can view records, while create, edit, update, and destroy require authentication because they involve adding, modifying, or deleting data.
+    Visitors are meant to browse the library, so viewAny and view return true on purpose. It's written in the policy, so it's a choice, not something I forgot.
 
-F5 You hid Add (and actions) for guests. Why is that not enough to secure those actions? What actually stops a stranger?
+5 The same rule is read by your controller and by your list page. What would go wrong if you had written that role check in both places by hand instead of in a policy?
 
-    Hiding buttons is not enough because a stranger can still access the URL or send a request directly. The auth middleware protects the routes on the server and blocks unauthenticated users from performing those actions.
+    If I wrote the role check by hand in both places, I'd have to change both whenever the rule changes. I could forget one, and the page and the controller would disagree. A policy keeps the rule in one place.
 
-F6 In screenshot 20 the route name was wrong. Why does auth middleware care that the route is named exactly login?
+6 What does SESSION_LIFETIME count, what does it not count, and why was there no warning before you found yourself logged out?
 
-    Auth middleware uses the exact route name login to know where to redirect unauthenticated users. If the route name is incorrect or missing, Laravel may throw a route-not-found error instead of redirecting properly.
+    It counts minutes of inactivity since the last request. It does not count time since login. There was no warning because the server can't tell the browser anything until the next request arrives, and by then the session has already expired.

@@ -12,7 +12,6 @@
                 </div>
                 <div class="card-body p-4">
 
-                    {{-- ✅ FIX: form wraps the partial — inputs are now INSIDE the form --}}
                     <form method="POST" action="{{ route('comics.store') }}">
                         @csrf
 

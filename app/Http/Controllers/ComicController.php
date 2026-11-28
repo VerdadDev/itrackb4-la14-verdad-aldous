@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 use App\Models\Comic;
 use App\Models\Genre;
 
@@ -41,12 +42,14 @@ class ComicController extends Controller
 
     public function create()
     {
+        Gate::authorize('create', Comic::class);
         $genres = Genre::all();
         return view('comics.create', compact('genres'));
     }
 
     public function store(Request $request)
     {
+        Gate::authorize('create', Comic::class);
         $validated = $request->validate([
             'title'        => 'required|string|max:255',
             'author'       => 'required|string|max:255',
@@ -67,6 +70,7 @@ class ComicController extends Controller
 
     public function edit(Comic $comic)
     {
+        Gate::authorize('update', $comic);
         $genres = Genre::all();
         return view('comics.edit', compact('comic', 'genres'));
     }
@@ -90,6 +94,7 @@ class ComicController extends Controller
 
     public function destroy(Comic $comic)
     {
+        Gate::authorize('delete', $comic);
         $comic->delete();
         return redirect()->route('comics.index')->with('success', 'Comic deleted successfully.');
     }
